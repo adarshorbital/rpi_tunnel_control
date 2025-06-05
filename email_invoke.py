@@ -1,0 +1,89 @@
+
+"""
+================================================================================
+    Script Name:      email_invoke.py
+    Description:      Sends automated notification when Boeing Wind Tunnel is powered on, to trusted point of contacts
+    
+    Author:           Adarsh Agrawal, agraw156@purdue.edu
+    Organization:     Purdue University - School of Aeronautics and Astronautics
+    Project:          Boeing Wind Tunnel Automation / Monitoring
+    Created On:       30-May-2025
+    Last Modified:    04-June-2025 by Adarsh Agrawal
+    
+    Usage:            This script is invoked when the RPi4 Model B detects a signal on its GPIO port 17. 
+                      This script is invoked by the program "start_bwt.py"
+    
+    Requirements:     - Python 3.x
+                      - Runs on Raspberry Pi 4 Model B
+    
+    Notes:            - This script is triggered when the tunnel powers on.
+                      - It sends a no-reply email via noreply-bwt-poweron@purdue.edu
+                      - Ensure SMTP credentials and system permissions are configured properly.
+    
+    License:          Created for use by Purdue University, all rights reserved
+================================================================================
+"""
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from datetime import datetime, timezone
+from email.message import EmailMessage
+
+
+# Sender and recipients
+sender_email = "noreply-bwtops@purdue.edu"
+relyto_email = "agraw156@purdue.edu"
+recipient_emails = ["tbietsch@purdue.edu", "sbane@purdue.edu", "olloya@purdue.edu", "nyquist@purdue.edu","rrhughes@purdue.edu","agraw156@purdue.edu"]
+
+# Obtain date and time
+now = datetime.now()
+utc_now = datetime.now(timezone.utc)
+tunnel_start_time = now.strftime("%Y-%m-%d %H:%M:%S")
+utc_tunnel_start_time = utc_now.strftime("%Y-%m-%d %H:%M:%S")
+
+
+# Email content
+subject = "Boeing Wind Tunnel Powered On"
+body = f"""
+Hi
+
+This is an automated notification from the Boeing Wind Tunnel at Purdue University, Aerospace Sciences Lab.
+
+Status:             ✅ POWER ON
+Timestamp:          {tunnel_start_time} Eastern Standard Time
+UTC Timestamp: 	  {utc_tunnel_start_time} Coordinated Universal Time
+
+(Timestamp format: YYYY-MM-DD HH:mm:ss)
+
+Please refer to the live camera feed to review the personnel using the tunnel at this time. 
+
+1. For any questions about the wind tunnel, please contact: Tom Bietsch (tbietsch@purdue.edu).
+2. For questions related to general programming of the tunnel, automation and LabVIEW, please contact: Adarsh Agrawal (agraw156@purdue.edu). 
+
+Thank you
+
+Best
+Aerospace Sciences Lab (AERO)
+School of Aeronautics and Astronautics 
+Purdue University
+"""
+# Create the email
+message = MIMEMultipart()
+message["From"] = sender_email
+message["To"] = ", ".join(recipient_emails)  # Displayed in the email client
+message["Reply-To"] = relyto_email
+message["Subject"] = subject
+message.attach(MIMEText(body, "plain"))
+
+try:
+    # Connect to Purdue SMTP server with TLS
+    server = smtplib.SMTP("smtp.purdue.edu", 587)
+    # Send email to all recipients
+    server.starttls()
+    server.send_message(message)
+    server.quit()
+    print("Email sent successfully to the following contacts:\n")
+    print(recipient_emails)
+except Exception as e:
+    print(f"Failed to send email: {e}")
