@@ -11,7 +11,7 @@ GPIO.setmode(GPIO.BCM)
 # Pin Definition
 pin = 26
 
-# Set up GPIO 17 as an input with an internal pull-down resistor
+# Set up GPIO 26 as an input with an internal pull-down resistor
 GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 purdue_print()
@@ -36,7 +36,7 @@ try:
         if current_state == GPIO.HIGH and past_state == GPIO.LOW:
             print("Power detected! Running emailer script to send emails to point of contacts...")
             print("The tunnel is currently ON")
-            subprocess.run(["python3","/home/aae-labco-pi/Desktop/rpi_wt/email_invoke.py"])
+            subprocess.run(["python3","/home/aslbwtpi/Desktop/rpi_wt/email_invoke.py"])
             past_state = current_state
             starttime = datetime.now()
             i = 0
