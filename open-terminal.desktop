@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type = Application
 Name = Open Terminal on Boot
-Exec = lxterminal --geometry=200x60 -e bash -c "python3 /home/aae-labco-pi/Desktop/rpi_wt/start_bwt.py; exec bash"
+Exec = lxterminal --geometry=200x60 -e bash -c "python3 /home/aslbwtpi/Desktop/rpi_wt/start_bwt.py; exec bash"
 StartupNotify = false
 Terminal = false
